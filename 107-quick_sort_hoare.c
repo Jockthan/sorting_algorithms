@@ -1,85 +1,76 @@
 #include "sort.h"
-int partition(int *array, int start, int end, int size);
-void quicksort(int *array, int start, int end, int size);
-void swap(int *array, int *a, int *b, int size);
+#include <stdio.h>
+#include <stdlib.h>
 
 /**
- * quick_sort_hoare - Implementation of quick sort
- * @array: Array to sort
- * @size: Size of array
- * Return: Never
+ * partition - finds the partition for the quicksort using the Hoare scheme
+ * @array: array to sort
+ * @lo: lowest index of the partition to sort
+ * @hi: highest index of the partition to sort
+ * @size: size of the array
+ *
+ * Return: index of the partition
+ */
+size_t partition(int *array, ssize_t lo, ssize_t hi, size_t size)
+{
+	int swap, pivot;
+
+	pivot = array[hi];
+	while (lo <= hi)
+	{
+		while (array[lo] < pivot)
+			lo++;
+		while (array[hi] > pivot)
+			hi--;
+		if (lo <= hi)
+		{
+			if (lo != hi)
+			{
+				swap = array[lo];
+				array[lo] = array[hi];
+				array[hi] = swap;
+				print_array(array, size);
+			}
+			lo++;
+			hi--;
+		}
+	}
+	return (hi);
+}
+
+/**
+ * quicksort - sorts a partition of an array of integers
+ * @array: array to sort
+ * @lo: lowest index of the partition to sort
+ * @hi: highest index of the partition to sort
+ * @size: size of the array
+ *
+ * Return: void
+ */
+void quicksort(int *array, ssize_t lo, ssize_t hi, size_t size)
+{
+	ssize_t pivot;
+
+	if (lo < hi)
+	{
+		pivot = partition(array, lo, hi, size);
+		quicksort(array, lo, pivot, size);
+		quicksort(array, pivot + 1, hi, size);
+
+	}
+}
+
+/**
+ * quick_sort_hoare - sorts an array of integers in ascending order using the
+ * Quick sort algorithm
+ * @array: The array to sort
+ * @size: The size of the array
+ *
+ * Return: void
  */
 void quick_sort_hoare(int *array, size_t size)
 {
 	if (array == NULL || size < 2)
 		return;
 	quicksort(array, 0, size - 1, size);
-}
-
-/**
- * quicksort - recursive function for quicksort
- * @array: Array to start
- * @start: Start of the array segment
- * @end: End of the array segment
- * @size: Size of the whole array
- * Return: None
- */
-void quicksort(int *array, int start, int end, int size)
-{
-
-	size_t j = 0;
-
-	if (start < end)
-	{
-		j = partition(array, start, end, size);
-		quicksort(array, start, j - 1, size);
-		quicksort(array, j, end, size);
-
-	}
-}
-
-/**
- * swap - recursive function for quicksort
- * @array: Array to start
- * @a: Index to swap
- * @b: Index to swap
- * @size: Size of the whole array
- * Return: None
- */
-void swap(int *array, int *a, int *b, int size)
-{
-	int temp = 0;
-
-	temp = *a;
-	*a = *b;
-	*b = temp;
-	print_array(array, size);
-}
-
-/**
- * partition - recursive function for quicksort
- * @array: Array to start
- * @start: Start of the array segment
- * @end: End of the array segment
- * @size: Size of the whole array
- * Return: None
- */
-int partition(int *array, int start, int end, int size)
-{
-	int pivot = array[end], i = start - 1;
-	int j = end + 1;
-
-	while (1)
-	{
-		do {
-			i += 1;
-		} while (array[i] < pivot);
-		do {
-			j -= 1;
-		} while (array[j] > pivot);
-		if (i >= j)
-			return (i);
-		swap(array, &array[i], &array[j], size);
-	}
-	return (i);
 }

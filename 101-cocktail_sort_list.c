@@ -1,150 +1,69 @@
 #include "sort.h"
-
-void swap_helper(listint_t *left, listint_t *right);
-listint_t *pointers_helper(size_t type, size_t place, listint_t **list);
-int length_helper(listint_t **list), swap = 0;
+#include <stdio.h>
 
 /**
- * cocktail_sort_list - A type of sorting algorithm
- * @list: The list of nodes to be sorted
+ * swap - swaps a node with the next node in the list
+ * @list: double pointer to the beginning of the list
+ * @node: node to swap
+ *
+ * Return: void
+ */
+void swap(listint_t **list, listint_t *node)
+{
+	node->next->prev = node->prev;
+	if (node->prev)
+		node->prev->next = node->next;
+	else
+		*list = node->next;
+	node->prev = node->next;
+	node->next = node->next->next;
+	node->prev->next = node;
+	if (node->next)
+		node->next->prev = node;
+}
+
+/**
+ * cocktail_sort_list - sorts a doubly linked list of integers in ascending
+ * order using the Cocktail shaker sort algorithm
+ * @list: Double pointer to the head of the doubly linked list
+ *
+ * Return: void
  */
 void cocktail_sort_list(listint_t **list)
 {
-	listint_t *front = NULL, *end = NULL;
-	listint_t *move = NULL, *current = NULL;
-	size_t count = 0;
+	char swapped = 1;
+	listint_t *temp;
 
-	if (!list || ((*list == NULL) || ((*list)->next == NULL)))
+	if (list == NULL || *list == NULL)
 		return;
-
-	front = *list;
-	end = front;
-	current = front;
-
-	while (end->next)
-		end = end->next;
-
-	while (front != end)
+	temp = *list;
+	while (swapped != 0)
 	{
-		swap = 0;
-		while (current != end)
+		swapped = 0;
+		while (temp->next != NULL)
 		{
-			move = current->next;
-			if (current->n <= move->n)
+			if (temp->next->n < temp->n)
 			{
-				current = move;
-				move = current->next;
-			}
-			if (move && current->n > move->n)
-			{
-				swap_helper(current, move);
-				if (move->prev == NULL)
-					*list = move;
+				swap(list, temp);
+				swapped = 1;
 				print_list(*list);
-				swap = 1;
 			}
-			if (current->next == NULL)
-				end = current;
+			else
+				temp = temp->next;
 		}
-		end = pointers_helper(1, count, list);
-		current = end;
-		while (current != front)
+		if (swapped == 0)
+			break;
+		swapped = 0;
+		while (temp->prev != NULL)
 		{
-			move = current->prev;
-			if (move && current->n >= move->n)
+			if (temp->prev->n > temp->n)
 			{
-				current = move;
-				move = current->prev;
-			}
-			if (move && current->n < move->n)
-			{
-				swap_helper(move, current);
-				if (current->prev == NULL)
-					*list = current;
+				swap(list, temp->prev);
+				swapped = 1;
 				print_list(*list);
-				swap = 1;
 			}
-			if (current->prev == NULL)
-				front = current;
-		}
-		if (swap == 0)
-			return;
-		front = pointers_helper(0, count, list);
-		count++;
-	}
-}
-
-/**
- * swap_helper - Swaps the position of two nodes
- * @left: The node to swap towards the start of the list
- * @right: The node to swap towards the end of the list
- */
-void swap_helper(listint_t *left, listint_t *right)
-{
-	listint_t *hold_l = left->prev;
-	listint_t *hold_r = right->next;
-
-	left->next = right->next;
-	right->next = left;
-	right->prev = hold_l;
-	if (hold_r)
-		hold_r->prev = left;
-	if (hold_l)
-		hold_l->next = right;
-	left->prev = right;
-}
-
-/**
- * pointers_helper - Determines placement of the front/end pointers
- * @type: Whether the pointer to set is the front or end
- * @place: Where in the list to set the pointer
- * @list: The list
- *
- * Return: Either the point where front would need to equal or -1
- */
-listint_t *pointers_helper(size_t type, size_t place, listint_t **list)
-{
-	listint_t *placement = *list;
-	size_t count = 0;
-
-	if (type == 1)
-	{
-		count = length_helper(list) - place;
-		while (count != place + 1)
-		{
-			placement = placement->next;
-			count--;
+			else
+				temp = temp->prev;
 		}
 	}
-	else
-	{
-		count = 0;
-		while (count != place + 1)
-		{
-			placement = placement->next;
-			count++;
-		}
-	}
-
-	return (placement);
-}
-
-/**
- * length_helper - Determines length of list and when the shaker sort must stop
- * @list: The list
- *
- * Return: Either the point where front would need to equal or -1
- */
-int length_helper(listint_t **list)
-{
-	listint_t *current = *list;
-	int count = 0;
-
-	while (current)
-	{
-		current = current->next;
-		count++;
-	}
-
-	return (count);
 }

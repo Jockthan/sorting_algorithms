@@ -1,35 +1,34 @@
 #include "sort.h"
 
 /**
- * shell_sort - Implementaiton of the shell sort algorithm
- * @array: Unsorted array
- * @size: Size of the array
- * Return: Never
+ * shell_sort - sorts an array of integers in ascending order using the
+ * Shell sort algorithm
+ * @array: array to sort
+ * @size: size of the array to sort
+ *
+ * Return: void
  */
 void shell_sort(int *array, size_t size)
 {
-	int temp = 0;
-	size_t i = 0, j = 0;
-	size_t gap = 0;
+	size_t i, j, gap = 1;
+	int insert;
 
 	if (array == NULL || size < 2)
 		return;
 
-	for (gap = 1; gap < (size / 3); gap = gap * 3 + 1) /* Def gap on arr size */
-		;
+	while (gap < size / 3)
+		gap = gap * 3 + 1;
 
 	while (gap > 0)
 	{
-		for (i = gap; i < size; i++) /* Move through remaining array after the gap */
+		for (i = gap; i < size; i++)
 		{
-			temp = array[i];
-			for (j = i; j >= gap && array[j - gap] > temp; j -= gap)
-			{
-				array[j] = array[j - gap]; /* Swap val before gap with after the gap */
-			}
-			array[j] = temp;
+			insert = array[i];
+			for (j = i; j >= gap && array[j - gap] > insert; j = j - gap)
+				array[j] = array[j - gap];
+			array[j] = insert;
 		}
-		gap = (gap - 1) / 3; /* Divide the gap by three and start again */
+		gap = (gap - 1) / 3;
 		print_array(array, size);
 	}
 }

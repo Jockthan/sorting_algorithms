@@ -1,60 +1,36 @@
 #include "sort.h"
 
-void swap_helper(listint_t *current, listint_t *move);
-
 /**
- * insertion_sort_list - A type of sorting algorithm
- * @list: The list of nodes to be sorted
+ * insertion_sort_list - sorts a doubly linked list of integers in ascending
+ * order using the Insertion sort algorithm
+ * @list: Double pointer to the head of the linked list
+ *
+ * Return: void
  */
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *current = NULL, *end = NULL, *move = NULL;
+	listint_t *swap_node, *next_swap;
 
-	if (!list || ((*list == NULL) || ((*list)->next == NULL)))
+	if (list == NULL || *list == NULL)
 		return;
-
-	current = (*list)->next;
-	end = *list;
-
-	while (current)
+	swap_node = (*list)->next;
+	while (swap_node != NULL)
 	{
-		if (current->n >= end->n)
+		next_swap = swap_node->next;
+		while (swap_node->prev != NULL && swap_node->prev->n > swap_node->n)
 		{
-			end = current;
-			current = end->next;
+			swap_node->prev->next = swap_node->next;
+			if (swap_node->next != NULL)
+				swap_node->next->prev = swap_node->prev;
+			swap_node->next = swap_node->prev;
+			swap_node->prev = swap_node->next->prev;
+			swap_node->next->prev = swap_node;
+			if (swap_node->prev == NULL)
+				*list = swap_node;
+			else
+				swap_node->prev->next = swap_node;
+			print_list(*list);
 		}
-		if (current && (current->n < end->n))
-		{
-			move = current->prev;
-			while (move && (move->n > current->n))
-			{
-				swap_helper(current, move);
-				move = current->prev;
-				if (move == NULL)
-					*list = current;
-				print_list(*list);
-			}
-			current = end->next;
-		}
+		swap_node = next_swap;
 	}
-}
-
-/**
- * swap_helper - Swaps the position of two nodes
- * @current: The node to swap forward
- * @move: The node to swap backward
- */
-void swap_helper(listint_t *current, listint_t *move)
-{
-	listint_t *hold_f = move->prev;
-	listint_t *hold_b = current->next;
-
-	move->next = current->next;
-	current->next = move;
-	current->prev = hold_f;
-	if (hold_b)
-		hold_b->prev = move;
-	if (hold_f)
-		hold_f->next = current;
-	move->prev = current;
 }
